@@ -1,0 +1,29 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite"
+    },
+    "devDependencies": {
+        "@quasar/vite-plugin": "^1.12.0",
+        "@tailwindcss/vite": "^4.0.0",
+        "concurrently": "^9.0.1",
+        "laravel-vite-plugin": "^3.1",
+        "sass": "^1.102.0",
+        "tailwindcss": "^4.0.0",
+        "typescript": "^7.0.2",
+        "vite": "^8.0.0",
+        "vue-tsc": "^3.3.8"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^7.3.1",
+        "@inertiajs/vue3": "^3.6.1",
+        "@quasar/extras": "^2.0.2",
+        "@vitejs/plugin-vue": "^6.0.8",
+        "quasar": "^2.23.1",
+        "vue": "^3.5.40",
+        "vuedraggable": "^4.1.0"
+    }
+}
