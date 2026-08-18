@@ -17,6 +17,7 @@ class Bot extends Model
     protected $fillable = [
         'name',
         'api_key',
+        'identity_token',
         'channel',
         'identity',
         'allowed_actions',
@@ -36,6 +37,10 @@ class Bot extends Model
             if (empty($bot->api_key)) {
                 $bot->api_key = self::generateApiKey();
             }
+
+            if (empty($bot->identity_token)) {
+                $bot->identity_token = self::generateIdentityToken();
+            }
         });
     }
 
@@ -46,5 +51,14 @@ class Bot extends Model
         } while (self::withTrashed()->where('api_key', $key)->exists());
 
         return $key;
+    }
+
+    public static function generateIdentityToken(): string
+    {
+        do {
+            $token = 'identity_' . Str::random(40);
+        } while (self::withTrashed()->where('identity_token', $token)->exists());
+
+        return $token;
     }
 }

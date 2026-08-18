@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminMenuController;
 use App\Http\Controllers\Admin\AdminPermissionController;
+use App\Http\Controllers\AiBotInstructionsController;
 use App\Http\Controllers\Admin\AdminRoleController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AiBotController;
@@ -12,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('ai-bots/{aiBot}/instructions.txt', [AiBotInstructionsController::class, 'show'])
+    ->name('ai-bots.instructions');
 
 Route::prefix('admin')->middleware(\App\Http\Middleware\Admin\HandleInertiaRequests::class)->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');

@@ -24,6 +24,7 @@ class UpdateRequest extends FormRequest
             'forbidden_actions' => 'nullable|string',
             'is_active' => 'boolean',
             'regenerate_api_key' => 'boolean',
+            'regenerate_identity_token' => 'boolean',
         ];
     }
 }

@@ -62,6 +62,11 @@ class AiBotController extends Controller
                 'id' => $aiBot->getKey(),
                 'name' => $aiBot->name,
                 'api_key' => $aiBot->api_key,
+                'identity_token' => $aiBot->identity_token,
+                'instructions_url' => route('ai-bots.instructions', [
+                    'aiBot' => $aiBot,
+                    'token' => $aiBot->identity_token,
+                ]),
                 'channel' => $aiBot->channel->value,
                 'identity' => $aiBot->identity,
                 'allowed_actions' => $aiBot->allowed_actions,
@@ -90,6 +95,10 @@ class AiBotController extends Controller
 
         if ($validated['regenerate_api_key'] ?? false) {
             $aiBot->update(['api_key' => Bot::generateApiKey()]);
+        }
+
+        if ($validated['regenerate_identity_token'] ?? false) {
+            $aiBot->update(['identity_token' => Bot::generateIdentityToken()]);
         }
 
         return redirect()->route('admin.ai-bots.index')
