@@ -16,7 +16,7 @@ class AiBotController extends Controller
     {
         $bots = Bot::orderBy('created_at', 'desc')
             ->get()
-            ->map(fn($bot) => [
+            ->map(fn ($bot) => [
                 'id' => $bot->getKey(),
                 'name' => $bot->name,
                 'channel' => $bot->channel->value,
@@ -41,7 +41,7 @@ class AiBotController extends Controller
     {
         $validated = $request->validated();
 
-        Bot::create([
+        $bot = Bot::create([
             'name' => $validated['name'],
             'channel' => $validated['channel'],
             'identity' => $validated['identity'] ?? null,
@@ -114,7 +114,7 @@ class AiBotController extends Controller
 
     private function channelOptions(): array
     {
-        return array_map(fn($case) => [
+        return array_map(fn ($case) => [
             'value' => $case->value,
             'label' => $case->label(),
         ], BotChannel::cases());

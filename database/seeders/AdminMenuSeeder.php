@@ -69,5 +69,27 @@ class AdminMenuSeeder extends Seeder
             'sort_order' => 1,
             'is_active' => true,
         ]);
+
+        $insuranceManagement = AdminMenu::create([
+            'name' => ['en' => 'Insurance Management', 'zh_TW' => '保險管理'],
+            'icon' => 'fas fa-file-shield',
+            'sort_order' => 3,
+            'is_active' => true,
+        ]);
+
+        foreach ([
+            ['Insurance Companies', '保險公司', 'fas fa-building-shield', 'admin.insurance-companies.index'],
+            ['Insurance Policies', '保單', 'fas fa-file-contract', 'admin.insurance-policies.index'],
+            ['Policy Contents', '保單內文', 'fas fa-align-left', 'admin.insurance-policy-contents.index'],
+        ] as $index => [$englishName, $traditionalChineseName, $icon, $routeName]) {
+            AdminMenu::create([
+                'parent_id' => $insuranceManagement->getKey(),
+                'name' => ['en' => $englishName, 'zh_TW' => $traditionalChineseName],
+                'icon' => $icon,
+                'route_name' => $routeName,
+                'sort_order' => $index + 1,
+                'is_active' => true,
+            ]);
+        }
     }
 }

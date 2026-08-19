@@ -2,12 +2,17 @@
 
 use App\Http\Controllers\Admin\AdminMenuController;
 use App\Http\Controllers\Admin\AdminPermissionController;
-use App\Http\Controllers\AiBotInstructionsController;
 use App\Http\Controllers\Admin\AdminRoleController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AiBotController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\InsuranceCompanyController;
+use App\Http\Controllers\Admin\InsurancePolicyContentController;
+use App\Http\Controllers\Admin\InsurancePolicyController;
+use App\Http\Controllers\AiBotInstructionsController;
 use App\Http\Controllers\Auth\AdminAuthController;
+use App\Http\Middleware\Admin\HandleInertiaRequests;
+use App\Http\Middleware\AdminAuth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -17,12 +22,12 @@ Route::get('/', function () {
 Route::get('ai-bots/{aiBot}/instructions.txt', [AiBotInstructionsController::class, 'show'])
     ->name('ai-bots.instructions');
 
-Route::prefix('admin')->middleware(\App\Http\Middleware\Admin\HandleInertiaRequests::class)->group(function () {
+Route::prefix('admin')->middleware(HandleInertiaRequests::class)->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.store');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
-    Route::middleware(\App\Http\Middleware\AdminAuth::class)->group(function () {
+    Route::middleware(AdminAuth::class)->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
 
         // Users
@@ -104,6 +109,48 @@ Route::prefix('admin')->middleware(\App\Http\Middleware\Admin\HandleInertiaReque
         Route::delete('ai-bots/{aiBot}', [AiBotController::class, 'destroy'])
             ->middleware('admin.permission:admin.ai-bots.delete')
             ->name('admin.ai-bots.destroy');
+
+        // Insurance Companies
+        Route::get('insurance-companies', [InsuranceCompanyController::class, 'index'])
+            ->middleware('admin.permission:admin.insurance-companies.index')->name('admin.insurance-companies.index');
+        Route::get('insurance-companies/create', [InsuranceCompanyController::class, 'create'])
+            ->middleware('admin.permission:admin.insurance-companies.create')->name('admin.insurance-companies.create');
+        Route::post('insurance-companies', [InsuranceCompanyController::class, 'store'])
+            ->middleware('admin.permission:admin.insurance-companies.create')->name('admin.insurance-companies.store');
+        Route::get('insurance-companies/{company}/edit', [InsuranceCompanyController::class, 'edit'])
+            ->middleware('admin.permission:admin.insurance-companies.edit')->name('admin.insurance-companies.edit');
+        Route::put('insurance-companies/{company}', [InsuranceCompanyController::class, 'update'])
+            ->middleware('admin.permission:admin.insurance-companies.edit')->name('admin.insurance-companies.update');
+        Route::delete('insurance-companies/{company}', [InsuranceCompanyController::class, 'destroy'])
+            ->middleware('admin.permission:admin.insurance-companies.delete')->name('admin.insurance-companies.destroy');
+
+        // Insurance Policies
+        Route::get('insurance-policies', [InsurancePolicyController::class, 'index'])
+            ->middleware('admin.permission:admin.insurance-policies.index')->name('admin.insurance-policies.index');
+        Route::get('insurance-policies/create', [InsurancePolicyController::class, 'create'])
+            ->middleware('admin.permission:admin.insurance-policies.create')->name('admin.insurance-policies.create');
+        Route::post('insurance-policies', [InsurancePolicyController::class, 'store'])
+            ->middleware('admin.permission:admin.insurance-policies.create')->name('admin.insurance-policies.store');
+        Route::get('insurance-policies/{policy}/edit', [InsurancePolicyController::class, 'edit'])
+            ->middleware('admin.permission:admin.insurance-policies.edit')->name('admin.insurance-policies.edit');
+        Route::put('insurance-policies/{policy}', [InsurancePolicyController::class, 'update'])
+            ->middleware('admin.permission:admin.insurance-policies.edit')->name('admin.insurance-policies.update');
+        Route::delete('insurance-policies/{policy}', [InsurancePolicyController::class, 'destroy'])
+            ->middleware('admin.permission:admin.insurance-policies.delete')->name('admin.insurance-policies.destroy');
+
+        // Insurance Policy Contents
+        Route::get('insurance-policy-contents', [InsurancePolicyContentController::class, 'index'])
+            ->middleware('admin.permission:admin.insurance-policy-contents.index')->name('admin.insurance-policy-contents.index');
+        Route::get('insurance-policy-contents/create', [InsurancePolicyContentController::class, 'create'])
+            ->middleware('admin.permission:admin.insurance-policy-contents.create')->name('admin.insurance-policy-contents.create');
+        Route::post('insurance-policy-contents', [InsurancePolicyContentController::class, 'store'])
+            ->middleware('admin.permission:admin.insurance-policy-contents.create')->name('admin.insurance-policy-contents.store');
+        Route::get('insurance-policy-contents/{content}/edit', [InsurancePolicyContentController::class, 'edit'])
+            ->middleware('admin.permission:admin.insurance-policy-contents.edit')->name('admin.insurance-policy-contents.edit');
+        Route::put('insurance-policy-contents/{content}', [InsurancePolicyContentController::class, 'update'])
+            ->middleware('admin.permission:admin.insurance-policy-contents.edit')->name('admin.insurance-policy-contents.update');
+        Route::delete('insurance-policy-contents/{content}', [InsurancePolicyContentController::class, 'destroy'])
+            ->middleware('admin.permission:admin.insurance-policy-contents.delete')->name('admin.insurance-policy-contents.destroy');
 
         // Menus
         Route::get('menus', [AdminMenuController::class, 'index'])

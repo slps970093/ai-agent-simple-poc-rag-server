@@ -67,7 +67,10 @@ import AdminLayout from '../../Layouts/AdminLayout.vue'
 defineOptions({ layout: AdminLayout })
 
 const $q = useQuasar()
-const props = defineProps<{ bot: any; channels: { value: string; label: string }[] }>()
+const props = defineProps<{
+  bot: any
+  channels: { value: string; label: string }[]
+}>()
 const showApiKey = ref(false)
 
 const maskedApiKey = computed(() => {

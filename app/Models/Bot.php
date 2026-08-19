@@ -47,7 +47,7 @@ class Bot extends Model
     public static function generateApiKey(): string
     {
         do {
-            $key = 'bot_' . Str::random(40);
+            $key = 'bot_'.Str::random(40);
         } while (self::withTrashed()->where('api_key', $key)->exists());
 
         return $key;
@@ -56,7 +56,7 @@ class Bot extends Model
     public static function generateIdentityToken(): string
     {
         do {
-            $token = 'identity_' . Str::random(40);
+            $token = 'identity_'.Str::random(40);
         } while (self::withTrashed()->where('identity_token', $token)->exists());
 
         return $token;
