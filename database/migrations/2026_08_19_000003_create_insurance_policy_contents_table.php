@@ -7,9 +7,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    // DDL for vector columns and HNSW indexes must run outside a transaction
-    // so the vector extension (created by the preceding pgvector migration) is
-    // visible to the PostgreSQL type system before this table is created.
+    // CREATE EXTENSION and vector DDL cannot run inside a PostgreSQL transaction
+    // because the new type is only visible after the extension is committed.
     public $withinTransaction = false;
 
     private const EMBEDDING_DIMENSIONS = 512;
@@ -17,6 +16,10 @@ return new class extends Migration
     public function up(): void
     {
         $usesPgsql = DB::getDriverName() === 'pgsql';
+
+        if ($usesPgsql) {
+            DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
+        }
 
         Schema::create('insurance_policy_contents', function (Blueprint $table) use ($usesPgsql) {
             $table->id();
