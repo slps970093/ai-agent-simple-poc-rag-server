@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    // DDL for vector columns and HNSW indexes must run outside a transaction
+    // so the vector extension (created by the preceding pgvector migration) is
+    // visible to the PostgreSQL type system before this table is created.
+    public bool $withinTransaction = false;
+
     private const EMBEDDING_DIMENSIONS = 512;
 
     public function up(): void
