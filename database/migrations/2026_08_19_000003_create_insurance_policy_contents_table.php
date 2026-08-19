@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    // CREATE EXTENSION and vector DDL cannot run inside a PostgreSQL transaction
-    // because the new type is only visible after the extension is committed.
+    // vector DDL must run outside a transaction so PostgreSQL resolves the
+    // vector type (registered by the extension) before executing the statement.
     public $withinTransaction = false;
 
     private const EMBEDDING_DIMENSIONS = 512;
@@ -17,23 +17,13 @@ return new class extends Migration
     {
         $usesPgsql = DB::getDriverName() === 'pgsql';
 
-        if ($usesPgsql) {
-            DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
-        }
-
-        Schema::create('insurance_policy_contents', function (Blueprint $table) use ($usesPgsql) {
+        Schema::create('insurance_policy_contents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('insurance_policy_id')
                 ->constrained('insurance_policies')
                 ->restrictOnDelete();
             $table->text('content');
-
-            if ($usesPgsql) {
-                $table->vector('embedding', self::EMBEDDING_DIMENSIONS)->nullable();
-            } else {
-                $table->text('embedding')->nullable();
-            }
-
+            $table->text('embedding')->nullable();
             $table->string('embedding_model')->default('BAAI/bge-small-zh-v1.5');
             $table->unsignedInteger('page_from')->nullable();
             $table->unsignedInteger('page_to')->nullable();
@@ -45,6 +35,14 @@ return new class extends Migration
         });
 
         if ($usesPgsql) {
+            // Alter the column to the proper vector type using raw SQL.
+            // This avoids relying on Blueprint macro resolution within a transaction.
+            DB::statement(sprintf(
+                'ALTER TABLE insurance_policy_contents ALTER COLUMN embedding TYPE vector(%d) USING embedding::vector(%d)',
+                self::EMBEDDING_DIMENSIONS,
+                self::EMBEDDING_DIMENSIONS
+            ));
+
             DB::statement(
                 'CREATE INDEX insurance_policy_contents_embedding_hnsw_idx '
                 .'ON insurance_policy_contents USING hnsw (embedding vector_cosine_ops)'
